@@ -1,0 +1,24 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "repository": "git@github.com:nanyangcn/api.git",
+  "author": "Yang Nan <nanyangcn@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./bin/index.js",
+    "dev": "ts-node ./src/index.ts",
+    "lint": "eslint . --ext .ts"
+  },
+  "dependencies": {
+    "@types/node": "^17.0.41",
+    "typescript": "^4.7.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.17.0",
+    "ts-node": "^10.8.1"
+  }
+}
