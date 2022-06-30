@@ -1,8 +1,9 @@
-import app from './app';
-import config from './util/config';
+import config from 'configs/port.config';
+import logger from 'utils/logger';
+import app from 'app';
 
 const { PORT } = config;
 
 app.listen(PORT, () => {
-  console.log('Listening on port', PORT);
+  logger.info(`Listening on ${PORT}`);
 });
