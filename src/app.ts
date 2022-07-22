@@ -2,7 +2,7 @@ import express from 'express';
 
 import dbService from 'services/db.service';
 
-const db = dbService.connectMongoDb();
+const db = await dbService.connectMongoDb();
 
 const app = express();
 
