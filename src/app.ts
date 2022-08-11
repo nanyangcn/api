@@ -1,9 +1,10 @@
 import express from 'express';
 
-import dbService from 'services/db.service';
-
-const db = await dbService.connectMongoDb();
+import todoRouter from 'routes/todo.route';
 
 const app = express();
+
+app.use(express.json());
+app.use('/api', todoRouter);
 
 export default app;
