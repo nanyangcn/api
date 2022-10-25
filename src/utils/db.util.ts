@@ -1,67 +1,96 @@
-import {
-  MongoClient, Collection,
-} from 'mongodb';
+import { MongoClient, Document } from 'mongodb';
+import { createClient } from 'redis';
 import { getErrMsg } from 'utils/errParser';
-import config from 'configs/db.config';
+import dbConfig from 'configs/db.config';
+import serverConfig from 'configs/server.config';
 import logger from 'utils/logger';
 
-const client = new MongoClient(config.MONGODB_URI);
+const mongoClient = new MongoClient(dbConfig.MONGODB_URI);
+const redisClient = createClient({ url: dbConfig.REDIS_URL });
+redisClient.on('error', (err) => logger.error(`Redis Client Error ${getErrMsg(err)}`));
+
+const connectMongo = async () => {
+  try {
+    await mongoClient.connect();
+    logger.info(`Connected to MongoDB: ${dbConfig.MONGODB_NAME}`);
+  } catch (err) {
+    logger.error(`Failed to connect to MongoDB: ${getErrMsg(err)}`);
+  }
+};
+
+const closeMongo = async () => {
+  try {
+    await mongoClient.close();
+    logger.info('Closed MongoDB connection');
+  } catch (err) {
+    logger.error(`Failed to close MongoDB connection: ${getErrMsg(err)}`);
+  }
+};
+
+const connectRedis = async () => {
+  try {
+    await redisClient.connect();
+    logger.info('Connected to Redis');
+  } catch (err) {
+    logger.error(`Failed to connect to Redis: ${getErrMsg(err)}`);
+  }
+};
+
+const closeRedis = async () => {
+  try {
+    await redisClient.disconnect();
+    logger.info('Closed Redis connection');
+  } catch (err) {
+    logger.error(`Failed to close Redis connection: ${getErrMsg(err)}`);
+  }
+};
 
 const connectDb = async () => {
-  try {
-    await client.connect();
-    logger.info(`Db: Successfully connected to MongoDB: ${config.MONGODB_NAME}`);
-  } catch (err) {
-    logger.error(`Db: Failed to connect to MongoDB: ${getErrMsg(err)}`);
+  await connectMongo();
+  if (serverConfig.WITHCACHE) {
+    await connectRedis();
   }
 };
 
 const closeDb = async () => {
-  try {
-    await client.close();
-    logger.info('Db: Successfully closed MongoDB connection');
-  } catch (err) {
-    logger.error(`Db: Failed to close MongoDB connection: ${getErrMsg(err)}`);
+  if (serverConfig.WITHCACHE) {
+    await closeRedis();
   }
+  await closeMongo();
 };
 
-const colls: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: Collection<any>
-} = {};
-
-const createOrGetColl = async <T>(
+const createOrGetColl = async <T extends Document>(
   collName: string,
-  uniqueKey?: string,
+  uniqueKeys?: string[],
   jsonSchema?: Record<string, unknown>,
 ) => {
-  const db = client.db(config.MONGODB_NAME);
-  if (colls[collName]) return colls[collName] as Collection<T>;
+  const db = mongoClient.db(dbConfig.MONGODB_NAME);
   try {
     const coll = await db.createCollection<T>(collName, {
       validator: {
         $jsonSchema: jsonSchema,
       },
     });
-    logger.info(`Db: Successfully created collection: ${collName}`);
-    if (uniqueKey) {
-      await coll.createIndex(uniqueKey, { unique: true });
+    logger.info(`Created collection: ${collName}`);
+    if (uniqueKeys?.length && uniqueKeys?.length > 0) {
+      await Promise.all(
+        uniqueKeys.map((key: string) => coll.createIndex(key, { unique: true })),
+      );
     }
-    colls[collName] = coll;
     return coll;
   } catch (err) {
     const errMsg = getErrMsg(err);
-    if (errMsg.includes('Collection already exists.')) {
-      logger.info(`Db: Successfully got collection: ${collName}`);
+    if (errMsg.includes('Collection') && errMsg.includes('already exists')) {
       const coll = db.collection<T>(collName);
-      colls[collName] = coll;
       return coll;
     }
-    return Promise.reject(new Error(`Db: Failed to get collection: ${errMsg}`));
+    return Promise.reject(new Error(`Failed to get collection: ${errMsg}`));
   }
 };
 
 export default {
+  mongoClient,
+  redisClient,
   connectDb,
   closeDb,
   createOrGetColl,

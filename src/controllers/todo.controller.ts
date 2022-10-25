@@ -1,100 +1,55 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 
 import todoService from 'services/todo.service';
-import { Todo } from 'types/todo.type';
+import { Todo, TodoReqWithToken, todoReqWithTokenValidate } from 'types/todo.type';
+import errUtil from 'utils/error.util';
+import reqValidate from 'utils/reqValidate';
 
-const getTodos = (_req: Request, res: Response<Todo[]>, next: NextFunction) => {
-  todoService.fetchTodos()
-    .then((todos) => {
-      res.send(todos);
-    })
-    .catch((err) => {
-      next(err);
-    });
+const getTodos = async (_req: Request, res: Response<Todo[]>) => {
+  const todos = await todoService.fetchTodos();
+  return res.send(todos);
 };
 
-const getTodo = (
-  req: Request<ParamsDictionary, Todo, Todo>,
-  res: Response<Todo | string>,
-  next: NextFunction,
+const getTodo = async (
+  req: Request<ParamsDictionary, unknown, unknown>,
+  res: Response,
 ) => {
-  const { id } = req.params;
-  if (!id) {
-    res.status(400).send('Missing id');
-  } else {
-    todoService.fetchTodoById(id)
-      .then((todo) => {
-        if (!todo) {
-          res.status(404).send('Todo not found');
-        } else {
-          res.json(todo);
-        }
-      })
-      .catch((err) => {
-        next(err);
-      });
-  }
+  const id = errUtil.reqIdHandler(req);
+  const todo = await todoService.fetchTodoById(id);
+  const notNullTodo = errUtil.itemNotFoundHandler(todo);
+  res.json(notNullTodo);
 };
 
-const postTodo = (
-  req: Request<ParamsDictionary, Todo, Todo>,
-  res: Response<Todo>,
-  next: NextFunction,
+const postTodo = async (
+  req: Request<ParamsDictionary, unknown, TodoReqWithToken>,
+  res: Response,
 ) => {
-  todoService.addTodo(req.body)
-    .then((newTodo) => {
-      res.json(newTodo);
-    })
-    .catch((err) => {
-      next(err);
-    });
+  errUtil.userIdChecker(req, req.body.decodedToken);
+  reqValidate.reqValidate(req.body, todoReqWithTokenValidate);
+  const newTodo = await todoService.addTodo(req.body);
+  res.json(newTodo);
 };
 
-const deleteTodo = (
-  req: Request<ParamsDictionary, Todo, Todo>,
-  res: Response<Todo | string>,
-  next: NextFunction,
+const deleteTodo = async (
+  req: Request<ParamsDictionary, unknown, unknown>,
+  res: Response,
 ) => {
-  const { id } = req.params;
-  if (!id) {
-    res.status(400).send('Missing id');
-  } else {
-    todoService.removeTodoById(id)
-      .then((count) => {
-        if (count === 0) {
-          res.status(404).send('Todo not found');
-        } else {
-          res.status(204).end();
-        }
-      })
-      .catch((err) => {
-        next(err);
-      });
-  }
+  const id = errUtil.reqIdHandler(req);
+  await todoService.removeTodoById(id);
+  res.status(204).end();
 };
 
-const putTodo = (
-  req: Request<ParamsDictionary, Todo, Todo>,
-  res: Response<Todo | string>,
-  next: NextFunction,
+const putTodo = async (
+  req: Request<ParamsDictionary, unknown, TodoReqWithToken>,
+  res: Response,
 ) => {
-  const { id } = req.params;
-  if (!id) {
-    res.status(400).send('Missing id');
-  } else {
-    todoService.replaceTodoById(id, req.body)
-      .then(({ count, todo }) => {
-        if (count === 0) {
-          res.status(404).send('Todo not found');
-        } else {
-          res.json(todo);
-        }
-      })
-      .catch((err) => {
-        next(err);
-      });
-  }
+  const id = errUtil.reqIdHandler(req);
+  errUtil.userIdChecker(req, req.body.decodedToken);
+  reqValidate.reqValidate(req.body, todoReqWithTokenValidate);
+  const { count, todo } = await todoService.replaceTodoById(id, req.body);
+  const notNullTodo = errUtil.itemNotFoundHandler(todo, count);
+  res.json(notNullTodo);
 };
 
 export default {

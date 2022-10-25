@@ -30,7 +30,7 @@ const logger = createLogger({
     timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
     colorize({ all: true }),
     printf(
-      (info) => `[${(info.timestamp as string)}] ${info.level}: ${info.message}`,
+      (info) => `[${(info.timestamp as string)}] ${info.level}: ${info.message as string}`,
     ),
   ),
   transports: [
