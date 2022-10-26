@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import express from 'express';
 
-import signupController from 'controllers/signup.controller';
+import signupController from 'src/controllers/signup.controller';
 
 const router = express.Router();
 

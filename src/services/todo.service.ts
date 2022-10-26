@@ -1,7 +1,7 @@
-import todoMongoModel from 'models/todo.mongo.model';
-import todoRedisModel from 'models/todo.redis.model';
-import { TodoReqWithToken, Todo } from 'types/todo.type';
-import serverConfig from 'configs/server.config';
+import todoMongoModel from 'src/models/todo.mongo.model';
+import todoRedisModel from 'src/models/todo.redis.model';
+import { TodoReqWithToken, Todo } from 'src/types/todo.type';
+import serverConfig from 'src/configs/server.config';
 
 const fetchTodos = async () => {
   const todos = await todoMongoModel.findTodos();

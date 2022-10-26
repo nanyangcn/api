@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
-import signupService from 'services/signup.service';
-import { UserReq, userReqValidate } from 'types/user.type';
-import reqValidate from 'utils/reqValidate';
+import signupService from 'src/services/signup.service';
+import { UserReq, userReqValidate } from 'src/types/user.type';
+import reqValidate from 'src/utils/reqValidate';
 
 const signup = async (
   req: Request<unknown, unknown, UserReq>,
@@ -10,7 +10,7 @@ const signup = async (
 ) => {
   reqValidate.reqValidate(req.body, userReqValidate);
   const newUser = await signupService.addUser(req.body);
-  return res.json(newUser);
+  return res.status(201).json(newUser);
 };
 
 export default {

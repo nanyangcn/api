@@ -1,7 +1,7 @@
-import { DecodedToken } from 'types/login.type';
+import { DecodedToken } from 'src/types/login.type';
 import { Request } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { idValidate } from 'types/id.type';
+import { idValidate } from 'src/types/id.type';
 
 const errorWrapper = (name: string, msg: string) => {
   const err = new Error(msg);

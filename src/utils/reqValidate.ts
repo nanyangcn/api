@@ -1,5 +1,5 @@
 import { ValidateFunction } from 'ajv';
-import errUtil from 'utils/error.util';
+import errUtil from 'src/utils/error.util';
 
 const reqValidate = <T>(body: T, validate: ValidateFunction<T>) => {
   if (!validate(body)) {

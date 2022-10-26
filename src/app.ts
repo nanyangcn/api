@@ -1,13 +1,13 @@
 import express from 'express';
 
-import signupRouter from 'routes/signup.route';
-import loginRouter from 'routes/login.route';
-import logoutRouter from 'routes/logout.route';
-import todoRouter from 'routes/todo.route';
-import userRouter from 'routes/user.route';
-import middleware from 'middlewares/general.mw';
-import morganMiddleware from 'middlewares/morgan.mw';
-import tokenMiddleware from 'middlewares/token.mw';
+import signupRouter from 'src/routes/signup.route';
+import loginRouter from 'src/routes/login.route';
+import logoutRouter from 'src/routes/logout.route';
+import todoRouter from 'src/routes/todo.route';
+import userRouter from 'src/routes/user.route';
+import middleware from 'src/middlewares/general.mw';
+import morganMiddleware from 'src/middlewares/morgan.mw';
+import tokenMiddleware from 'src/middlewares/token.mw';
 
 const app = express();
 

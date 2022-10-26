@@ -1,5 +1,9 @@
 {
-  "verbose": true,
+  "preset": "ts-jest",
+  "verbose": false,
   "testEnvironment": "node",
-  "runInBand": true
+  "moduleNameMapper": {
+    "src/(.*)": "<rootDir>/src/$1",
+    "tests/(.*)": "<rootDir>/tests/$1"
+  }
 }

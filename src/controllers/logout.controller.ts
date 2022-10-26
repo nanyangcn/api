@@ -1,9 +1,9 @@
-import { DecodedToken } from 'types/login.type';
+import { DecodedToken } from 'src/types/login.type';
 import { Request, Response } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 
-import logoutService from 'services/logout.service';
-import errUtil from 'utils/error.util';
+import logoutService from 'src/services/logout.service';
+import errUtil from 'src/utils/error.util';
 
 const deleteLogout = async (
   req: Request<ParamsDictionary, unknown, { decodedToken: DecodedToken }>,

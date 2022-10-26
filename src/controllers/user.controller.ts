@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 
-import userService from 'services/user.service';
-import { User, UserReqWithToken, userReqWithTokenValidate } from 'types/user.type';
-import { DecodedToken } from 'types/login.type';
-import errUtil from 'utils/error.util';
-import reqValidate from 'utils/reqValidate';
+import userService from 'src/services/user.service';
+import { User, UserReqWithToken, userReqWithTokenValidate } from 'src/types/user.type';
+import { DecodedToken } from 'src/types/login.type';
+import errUtil from 'src/utils/error.util';
+import reqValidate from 'src/utils/reqValidate';
 
 const getUsers = async (_req: Request, res: Response<User[]>) => {
   const users = await userService.fetchUsers();

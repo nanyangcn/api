@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import express from 'express';
 
-import todoController from 'controllers/todo.controller';
+import todoController from 'src/controllers/todo.controller';
 
 const router = express.Router();
 

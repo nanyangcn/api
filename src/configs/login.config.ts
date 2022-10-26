@@ -2,10 +2,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const {
-  PRIVATEKEY,
-  BCRYPTSALT = 10,
-} = process.env;
+const PRIVATEKEY = process.env.PRIVATEKEY || null;
+const BCRYPTSALT = Number(process.env.BCRYPTSALT) || 10;
 
 if (!PRIVATEKEY) {
   throw new Error('PrivateKey missing!');

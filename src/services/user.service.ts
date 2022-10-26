@@ -1,7 +1,7 @@
-import userMongoModel from 'models/user.mongo.model';
-import { UserReq } from 'types/user.type';
-import logoutService from './logout.service';
-import todoService from './todo.service';
+import userMongoModel from 'src/models/user.mongo.model';
+import { UserReq } from 'src/types/user.type';
+import logoutService from 'src/services/logout.service';
+import todoService from 'src/services/todo.service';
 
 const fetchUsers = async () => {
   const users = await userMongoModel.findUsers();

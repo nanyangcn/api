@@ -2,10 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import jwt from 'jsonwebtoken';
 
-import tokenRedisModel from 'models/token.redis.model';
-import tokenUtil from 'utils/token.util';
-import loginConfig from 'configs/login.config';
-import { tokenValidate } from 'types/login.type';
+import tokenRedisModel from 'src/models/token.redis.model';
+import tokenUtil from 'src/utils/token.util';
+import loginConfig from 'src/configs/login.config';
+import { tokenValidate } from 'src/types/login.type';
+import errUtil from 'src/utils/error.util';
 
 const tokenVerifier = async (
   err: Error,
@@ -13,20 +14,32 @@ const tokenVerifier = async (
   _res: Response,
   next: NextFunction,
 ) => {
+  if (err) {
+    return next(err);
+  }
   const token = tokenUtil.tokenExtractor(req);
   if (!token) {
-    throw new Error('Token missing');
+    throw errUtil.errorWrapper(
+      'JsonWebTokenError',
+      'Token missing',
+    );
   }
   const decodedToken = token && jwt.verify(token, loginConfig.PRIVATEKEY);
   if (!tokenValidate(decodedToken)) {
-    throw new Error('Token invalid');
+    throw errUtil.errorWrapper(
+      'JsonWebTokenError',
+      'Token invalid',
+    );
   }
   const validToken = await tokenRedisModel.fetchToken(String(decodedToken.id));
   if (!validToken || validToken !== token) {
-    throw new Error('Token invalid');
+    throw errUtil.errorWrapper(
+      'JsonWebTokenError',
+      'Token invalid',
+    );
   }
   req.body.decodedToken = decodedToken;
-  next(err);
+  return req.body;
 };
 
 export default {

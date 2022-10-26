@@ -17,7 +17,7 @@ const colors = {
 addColors(colors);
 
 const logger = createLogger({
-  level: process.env.NODE_ENV === 'dev' ? 'debug' : 'warn',
+  level: process.env.NODE_ENV === 'prod' ? 'warn' : 'debug',
   levels: {
     error: 0,
     warn: 1,

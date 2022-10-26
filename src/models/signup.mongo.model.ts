@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import db from 'utils/db.util';
-import { UserReq, User } from 'types/user.type';
+import db from 'src/utils/db.util';
+import { UserReq, User } from 'src/types/user.type';
 
 export interface UserMongo {
   _id?: ObjectId;

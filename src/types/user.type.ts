@@ -1,7 +1,7 @@
 import Avj, { JSONSchemaType } from 'ajv';
 
-import { DecodedToken, loginReqSchema } from 'types/login.type';
-import { Todo } from 'types/todo.type';
+import { DecodedToken, loginReqSchema } from 'src/types/login.type';
+import { Todo } from 'src/types/todo.type';
 
 const ajv = new Avj();
 

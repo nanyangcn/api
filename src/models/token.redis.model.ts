@@ -1,4 +1,4 @@
-import db from 'utils/db.util';
+import db from 'src/utils/db.util';
 
 const fetchToken = async (key: string) => {
   const value = await db.redisClient.get(key);

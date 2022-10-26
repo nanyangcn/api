@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import logger from 'utils/logger';
+import logger from 'src/utils/logger';
 
 const errorHandler = (err: Error, _req: Request, res: Response, next: NextFunction) => {
   switch (err.name) {

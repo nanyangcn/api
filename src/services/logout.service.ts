@@ -1,4 +1,4 @@
-import tokenRedisModel from 'models/token.redis.model';
+import tokenRedisModel from 'src/models/token.redis.model';
 
 const logout = async (id: string) => {
   await tokenRedisModel.revokeToken(id);

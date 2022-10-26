@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import db from 'utils/db.util';
-import { Todo, TodoReqWithToken } from 'types/todo.type';
+import db from 'src/utils/db.util';
+import { Todo, TodoReqWithToken } from 'src/types/todo.type';
 
 export interface TodoMongo {
   _id?: ObjectId;

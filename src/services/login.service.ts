@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import userMongoModel from 'models/user.mongo.model';
-import tokenRedisModel from 'models/token.redis.model';
-import { LoginReq, DecodedToken } from 'types/login.type';
-import loginConfig from 'configs/login.config';
+import userMongoModel from 'src/models/user.mongo.model';
+import tokenRedisModel from 'src/models/token.redis.model';
+import { LoginReq, DecodedToken } from 'src/types/login.type';
+import loginConfig from 'src/configs/login.config';
 
 const login = async (user: LoginReq) => {
   const userDb = await userMongoModel.findUserByUsername(user.username);

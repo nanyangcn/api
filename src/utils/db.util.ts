@@ -1,11 +1,12 @@
 import { MongoClient, Document } from 'mongodb';
 import { createClient } from 'redis';
-import { getErrMsg } from 'utils/errParser';
-import dbConfig from 'configs/db.config';
-import serverConfig from 'configs/server.config';
-import logger from 'utils/logger';
+import { getErrMsg } from 'src/utils/errParser';
+import dbConfig from 'src/configs/db.config';
+import serverConfig from 'src/configs/server.config';
+import logger from 'src/utils/logger';
 
 const mongoClient = new MongoClient(dbConfig.MONGODB_URI);
+const db = mongoClient.db(dbConfig.MONGODB_NAME);
 const redisClient = createClient({ url: dbConfig.REDIS_URL });
 redisClient.on('error', (err) => logger.error(`Redis Client Error ${getErrMsg(err)}`));
 
@@ -64,7 +65,6 @@ const createOrGetColl = async <T extends Document>(
   uniqueKeys?: string[],
   jsonSchema?: Record<string, unknown>,
 ) => {
-  const db = mongoClient.db(dbConfig.MONGODB_NAME);
   try {
     const coll = await db.createCollection<T>(collName, {
       validator: {
@@ -88,10 +88,26 @@ const createOrGetColl = async <T extends Document>(
   }
 };
 
+const cleanMongo = async () => {
+  await db.dropDatabase();
+};
+
+const cleanRedis = async () => {
+  await redisClient.flushAll();
+};
+
+const cleanDb = async () => {
+  await cleanMongo();
+  await cleanRedis();
+};
+
 export default {
   mongoClient,
   redisClient,
   connectDb,
   closeDb,
   createOrGetColl,
+  cleanMongo,
+  cleanRedis,
+  cleanDb,
 };

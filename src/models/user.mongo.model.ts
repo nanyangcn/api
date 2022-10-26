@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
-import db from 'utils/db.util';
-import { User, UserReq } from 'types/user.type';
-import todoMongoModel, { TodoMongo } from './todo.mongo.model';
+import db from 'src/utils/db.util';
+import { User, UserReq } from 'src/types/user.type';
+import todoMongoModel, { TodoMongo } from 'src/models/todo.mongo.model';
 
 export interface UserMongo {
   _id?: ObjectId;

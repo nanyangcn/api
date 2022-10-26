@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-import loginService from 'services/login.service';
-import { LoginReq, loginReqValidate } from 'types/login.type';
-import errUtil from 'utils/error.util';
-import reqValidate from 'utils/reqValidate';
+import loginService from 'src/services/login.service';
+import { LoginReq, loginReqValidate } from 'src/types/login.type';
+import errUtil from 'src/utils/error.util';
+import reqValidate from 'src/utils/reqValidate';
 
 const postLogin = async (
   req: Request<unknown, unknown, LoginReq>,

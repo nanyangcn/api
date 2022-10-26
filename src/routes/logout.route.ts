@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import express from 'express';
 
-import logoutController from 'controllers/logout.controller';
+import logoutController from 'src/controllers/logout.controller';
 
 const router = express.Router();
 

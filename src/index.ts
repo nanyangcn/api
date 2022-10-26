@@ -1,9 +1,9 @@
-import config from 'configs/server.config';
-import logger from 'utils/logger';
-import app from 'app';
+import config from 'src/configs/server.config';
+import logger from 'src/utils/logger';
+import app from 'src/app';
 import https from 'https';
 import fs from 'fs';
-import db from 'utils/db.util';
+import db from 'src/utils/db.util';
 
 const httpsServer = https.createServer(
   {
@@ -12,6 +12,7 @@ const httpsServer = https.createServer(
   },
   app,
 );
+
 db.connectDb().then(() => {
   httpsServer.listen(config.PORT, () => {
     logger.info(`Listening on https://localhost:${config.PORT}`);

@@ -1,7 +1,7 @@
 import Avj, { JSONSchemaType } from 'ajv';
 import addFormats from 'ajv-formats';
 
-import { DecodedToken, loginReqSchema } from 'types/login.type';
+import { DecodedToken, loginReqSchema } from 'src/types/login.type';
 
 const ajv = new Avj();
 addFormats(ajv);

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 
-import todoService from 'services/todo.service';
-import { Todo, TodoReqWithToken, todoReqWithTokenValidate } from 'types/todo.type';
-import errUtil from 'utils/error.util';
-import reqValidate from 'utils/reqValidate';
+import todoService from 'src/services/todo.service';
+import { Todo, TodoReqWithToken, todoReqWithTokenValidate } from 'src/types/todo.type';
+import errUtil from 'src/utils/error.util';
+import reqValidate from 'src/utils/reqValidate';
 
 const getTodos = async (_req: Request, res: Response<Todo[]>) => {
   const todos = await todoService.fetchTodos();
