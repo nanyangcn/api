@@ -1,8 +1,6 @@
 import Avj, { JSONSchemaType } from 'ajv';
-import addParameters from 'ajv-formats';
 
 const ajv = new Avj();
-addParameters(ajv);
 
 export interface LoginReq {
   username: string;
@@ -32,13 +30,18 @@ export const loginReqValidate = ajv.compile(loginReqSchema);
 export interface DecodedToken {
   username: string;
   id: string;
+  iat: number;
+  exp: number;
 }
 
 export const tokenSchema: JSONSchemaType<DecodedToken> = {
+  $id: 'tokenSchema',
   type: 'object',
   required: [
     'username',
     'id',
+    'iat',
+    'exp',
   ],
   properties: {
     username: {
@@ -46,7 +49,12 @@ export const tokenSchema: JSONSchemaType<DecodedToken> = {
     },
     id: {
       type: 'string',
-      format: 'byte',
+    },
+    iat: {
+      type: 'number',
+    },
+    exp: {
+      type: 'number',
     },
   },
   additionalProperties: false,

@@ -9,14 +9,10 @@ import { tokenValidate } from 'src/types/login.type';
 import errUtil from 'src/utils/error.util';
 
 const tokenVerifier = async (
-  err: Error,
   req: Request<ParamsDictionary, unknown, Record<string, unknown>>,
   _res: Response,
   next: NextFunction,
 ) => {
-  if (err) {
-    return next(err);
-  }
   const token = tokenUtil.tokenExtractor(req);
   if (!token) {
     throw errUtil.errorWrapper(
@@ -24,7 +20,7 @@ const tokenVerifier = async (
       'Token missing',
     );
   }
-  const decodedToken = token && jwt.verify(token, loginConfig.PRIVATEKEY);
+  const decodedToken = token && jwt.verify(token, loginConfig.PRIVATE_KEY);
   if (!tokenValidate(decodedToken)) {
     throw errUtil.errorWrapper(
       'JsonWebTokenError',
@@ -38,8 +34,12 @@ const tokenVerifier = async (
       'Token invalid',
     );
   }
-  req.body.decodedToken = decodedToken;
-  return req.body;
+  if (req.body) {
+    req.body.decodedToken = decodedToken;
+  } else {
+    req.body = { decodedToken };
+  }
+  next();
 };
 
 export default {

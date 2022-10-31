@@ -4,26 +4,26 @@ import logger from 'src/utils/logger';
 
 const errorHandler = (err: Error, _req: Request, res: Response, next: NextFunction) => {
   switch (err.name) {
-    case 'JsonWebTokenError'
-      || 'TokenExpiredError'
-      || 'UsernameOrPasswordError'
-      || 'UnauthorizedError':
-      res.status(401);
+    case 'JsonWebTokenError':
+    case 'TokenExpiredError':
+    case 'AuthenticationError':
+    case 'UnauthorizedError':
+      res.status(401).json({ error: err.message });
       break;
-    case 'MongoServerError'
-      || 'TypeValidationError'
-      || 'SyntaxError'
-      || 'MalformattedIdError':
-      res.status(400);
+    case 'MongoServerError':
+    case 'TypeValidationError':
+    case 'SyntaxError':
+    case 'MalformattedIdError':
+      res.status(400).json({ error: err.message });
       break;
     case 'NotFoundError':
-      res.status(404);
+      res.status(404).json({ error: err.message });
       break;
     default:
-      logger.error(`${err.message}`);
+      res.status(500).json({ error: err.message });
+      logger.error(`${JSON.stringify(err)}`);
       next(err);
   }
-  res.json({ error: err.message });
 };
 
 const unknownEndpoint = (_req: Request, res: Response) => {

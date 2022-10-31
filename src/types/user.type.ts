@@ -1,6 +1,6 @@
 import Avj, { JSONSchemaType } from 'ajv';
 
-import { DecodedToken, loginReqSchema } from 'src/types/login.type';
+import { DecodedToken, tokenSchema } from 'src/types/login.type';
 import { Todo } from 'src/types/todo.type';
 
 const ajv = new Avj();
@@ -54,12 +54,12 @@ const userReqWithTokenSchema: JSONSchemaType<UserReqWithToken> = {
       type: 'string',
     },
     decodedToken: {
-      $ref: 'loginReqSchema',
+      $ref: 'tokenSchema',
     },
   },
   additionalProperties: false,
 };
 
 export const userReqWithTokenValidate = ajv
-  .addSchema(loginReqSchema)
+  .addSchema(tokenSchema)
   .compile(userReqWithTokenSchema);

@@ -1,6 +1,6 @@
 {
   "preset": "ts-jest",
-  "verbose": false,
+  "verbose": true,
   "testEnvironment": "node",
   "moduleNameMapper": {
     "src/(.*)": "<rootDir>/src/$1",

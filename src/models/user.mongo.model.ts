@@ -27,12 +27,12 @@ const bsonSchema = {
   },
 };
 
-const transFromDb = (data: UserMongo) => {
+const transFromDb = (data: UserMongo, showPwdHash = false) => {
   const oIdKey = '_id';
   const newData: User = {
     id: data[oIdKey]?.toString(),
     username: data.username,
-    passwordHash: data.passwordHash,
+    passwordHash: showPwdHash ? data.passwordHash : undefined,
     todos: data.todos?.map(todoMongoModel.transFromDb) || [],
   };
   return newData;
@@ -51,7 +51,7 @@ const uniKeys = ['username'];
 const findUsers = async () => {
   const coll = await db.createOrGetColl<UserMongo>(collName, uniKeys, bsonSchema);
   const users = await coll.find({}).toArray();
-  return users.map(transFromDb);
+  return users.map((user) => transFromDb(user));
 };
 
 const findUserById = async (id: string) => {
@@ -93,7 +93,7 @@ const findUserByUsername = async (username: string) => {
       },
     },
   ]).toArray();
-  return user[0] && transFromDb(user[0]);
+  return user[0] && transFromDb(user[0], true);
 };
 
 const deleteUserById = async (id: string) => {

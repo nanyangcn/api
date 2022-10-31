@@ -1,10 +1,8 @@
 import Avj, { JSONSchemaType } from 'ajv';
-import addFormats from 'ajv-formats';
 
-import { DecodedToken, loginReqSchema } from 'src/types/login.type';
+import { DecodedToken, tokenSchema } from 'src/types/login.type';
 
 const ajv = new Avj();
-addFormats(ajv);
 
 export interface TodoReq {
   userId: string;
@@ -22,12 +20,13 @@ export interface TodoReqWithToken extends TodoReq {
   decodedToken: DecodedToken
 }
 
-const todoReqWithTokenSchema: JSONSchemaType<TodoReq> = {
+const todoReqWithTokenSchema: JSONSchemaType<TodoReqWithToken> = {
   type: 'object',
   required: [
     'userId',
     'title',
     'done',
+    'decodedToken',
   ],
   properties: {
     userId: {
@@ -45,13 +44,15 @@ const todoReqWithTokenSchema: JSONSchemaType<TodoReq> = {
     },
     deadline: {
       type: 'string',
-      format: 'date',
       nullable: true,
+    },
+    decodedToken: {
+      $ref: 'tokenSchema',
     },
   },
   additionalProperties: false,
 };
 
 export const todoReqWithTokenValidate = ajv
-  .addSchema(loginReqSchema)
+  .addSchema(tokenSchema)
   .compile(todoReqWithTokenSchema);

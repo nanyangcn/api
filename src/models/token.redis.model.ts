@@ -5,9 +5,9 @@ const fetchToken = async (key: string) => {
   return value;
 };
 
-const saveToken = async (key: string, value: string) => {
+const saveToken = async (key: string, value: string, expiresIn: number) => {
   await db.redisClient.set(key, value, {
-    EX: 3600,
+    EX: expiresIn,
   });
 };
 

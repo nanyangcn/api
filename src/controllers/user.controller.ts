@@ -2,13 +2,16 @@ import { Request, Response } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 
 import userService from 'src/services/user.service';
-import { User, UserReqWithToken, userReqWithTokenValidate } from 'src/types/user.type';
+import { UserReqWithToken, userReqWithTokenValidate } from 'src/types/user.type';
 import { DecodedToken } from 'src/types/login.type';
 import errUtil from 'src/utils/error.util';
 import reqValidate from 'src/utils/reqValidate';
 
-const getUsers = async (_req: Request, res: Response<User[]>) => {
-  const users = await userService.fetchUsers();
+const getUsers = async (
+  req: Request<ParamsDictionary, unknown, { decodedToken: DecodedToken }>,
+  res: Response,
+) => {
+  const users = await userService.fetchUsers(req.body.decodedToken.username);
   return res.send(users);
 };
 
@@ -18,13 +21,12 @@ const getUser = async (
 ) => {
   const id = errUtil.reqIdHandler(req, req.body.decodedToken);
   const user = await userService.fetchUserById(id);
-  const notNullUser = errUtil.itemNotFoundHandler(user);
-  return res.json(notNullUser);
+  return res.json(user);
 };
 
 const deleteUser = async (
   req: Request<ParamsDictionary, unknown, { decodedToken: DecodedToken }>,
-  res: Response<User | string>,
+  res: Response,
 ) => {
   const id = errUtil.reqIdHandler(req, req.body.decodedToken);
   await userService.removeUserById(id);
@@ -33,13 +35,12 @@ const deleteUser = async (
 
 const putUser = async (
   req: Request<ParamsDictionary, unknown, UserReqWithToken>,
-  res: Response<User | string>,
+  res: Response,
 ) => {
   const id = errUtil.reqIdHandler(req, req.body.decodedToken);
   reqValidate.reqValidate(req.body, userReqWithTokenValidate);
-  const { count, user } = await userService.replaceUserById(id, req.body);
-  const notNullUser = errUtil.itemNotFoundHandler(user, count);
-  return res.json(notNullUser);
+  const user = await userService.replaceUserById(id, req.body);
+  return res.json(user);
 };
 
 export default {

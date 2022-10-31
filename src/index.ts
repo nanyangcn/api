@@ -22,7 +22,7 @@ db.connectDb().then(() => {
 const cleanup = (signal: string) => {
   logger.warn(`Signal ${signal} received.`);
   httpsServer.close(() => {
-    logger.info('Http server closed.');
+    logger.info('Server is closing.');
     db.closeDb().then(() => {
       setTimeout(() => {
         process.exit(0);

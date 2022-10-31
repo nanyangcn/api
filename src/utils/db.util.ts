@@ -48,13 +48,13 @@ const closeRedis = async () => {
 
 const connectDb = async () => {
   await connectMongo();
-  if (serverConfig.WITHCACHE) {
+  if (serverConfig.WITH_REDIS) {
     await connectRedis();
   }
 };
 
 const closeDb = async () => {
-  if (serverConfig.WITHCACHE) {
+  if (serverConfig.WITH_REDIS) {
     await closeRedis();
   }
   await closeMongo();

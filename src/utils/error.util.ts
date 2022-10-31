@@ -20,7 +20,7 @@ const reqIdHandler = (req: Request<ParamsDictionary>, decodedToken?: DecodedToke
   if (decodedToken && id !== decodedToken.id) {
     throw errorWrapper(
       'UnauthorizedError',
-      'Item not authorized to user',
+      'Unauthorized Operation',
     );
   }
   return id;
@@ -33,7 +33,7 @@ const userIdChecker = <T extends { userId: string }>(
   if (userId !== decodedToken.id) {
     throw errorWrapper(
       'UnauthorizedError',
-      'User not authorized to user',
+      'Unauthorized Operation',
     );
   }
 };
@@ -42,10 +42,19 @@ const itemNotFoundHandler = <T>(item: T, count?: number) => {
   if (!item || count === 0) {
     throw errorWrapper(
       'NotFoundError',
-      'Item not found',
+      'Not found',
     );
   }
   return item;
+};
+
+const rootChecker = (username: string) => {
+  if (username !== 'root') {
+    throw errorWrapper(
+      'UnauthorizedError',
+      'Unauthorized Operation',
+    );
+  }
 };
 
 export default {
@@ -53,4 +62,5 @@ export default {
   reqIdHandler,
   userIdChecker,
   itemNotFoundHandler,
+  rootChecker,
 };
