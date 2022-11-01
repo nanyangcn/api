@@ -6,7 +6,7 @@ const stream: StreamOptions = {
   write: (message) => logger.http(message),
 };
 
-const skip = () => process.env.NODE_ENV === 'prod';
+const skip = () => process.env.NODE_ENV !== 'dev';
 
 const morganMiddleware = morgan(
   'tiny',
