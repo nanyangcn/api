@@ -16,7 +16,6 @@ app.use(morganMiddleware);
 
 app.use('/api', signupRouter);
 app.use('/api', loginRouter);
-// eslint-disable @typescript-eslint/no-misused-promises
 app.use(tokenMiddleware.tokenVerifier);
 app.use('/api', logoutRouter);
 app.use('/api', todoRouter);
