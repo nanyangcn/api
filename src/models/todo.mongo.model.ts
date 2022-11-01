@@ -66,6 +66,8 @@ const transToDb = (data: TodoReqWithToken) => {
     done: data.done,
     deadline: data.deadline ? new Date(data.deadline) : undefined,
   };
+  if (!newData.description) delete newData.description;
+  if (!newData.deadline) delete newData.deadline;
   return newData;
 };
 

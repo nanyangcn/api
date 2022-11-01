@@ -1,12 +1,15 @@
 import db from 'src/utils/db.util';
 
-const fetchFromCache = async (key: string) => {
+const fetchFromCache = async <T>(key: string) => {
   const value = await db.redisClient.get(key);
-  return value;
+  if (!value) {
+    return null;
+  }
+  return JSON.parse(value) as T;
 };
 
-const saveToCache = async (key: string, value: string) => {
-  await db.redisClient.set(key, value);
+const saveToCache = async <T>(key: string, value: T) => {
+  await db.redisClient.set(key, JSON.stringify(value));
 };
 
 const deleteFromCache = async (key:string | string[]) => {

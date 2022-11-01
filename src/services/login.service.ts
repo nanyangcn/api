@@ -24,10 +24,10 @@ const login = async (user: LoginReq) => {
     unencodedToken,
     loginConfig.PRIVATE_KEY,
     {
-      expiresIn: loginConfig.TOKEN_EXPIRE_TIME,
+      expiresIn: loginConfig.TOKEN_EXPIRE_TIME, // in s
     },
   );
-  await tokenRedisModel.saveToken(userDb.id, token, loginConfig.TOKEN_EXPIRE_TIME);
+  await tokenRedisModel.saveToken(userDb.id, token, 1000 * loginConfig.TOKEN_EXPIRE_TIME); // in ms
   return {
     id: userDb.id,
     token,

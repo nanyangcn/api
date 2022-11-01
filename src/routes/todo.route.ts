@@ -5,7 +5,7 @@ import todoController from 'src/controllers/todo.controller';
 
 const router = express.Router();
 
-// router.get('/todo', todoController.getTodos);
+router.get('/todo', todoController.getTodos);
 router.get('/todo/:id', todoController.getTodo);
 router.post('/todo', todoController.postTodo);
 router.delete('/todo/:id', todoController.deleteTodo);

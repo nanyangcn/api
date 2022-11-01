@@ -179,32 +179,33 @@ describe('User test', () => {
   });
 
   describe('Signup', () => {
-    test('One user signup', async () => {
-      await signup(user0);
+    test('Should get 201 when one user signup', async () => {
+      const res = await signup(user0);
+      expect(res.error).toBeUndefined();
     });
 
     describe('Signup error', () => {
-      beforeEach(async () => {
-        await db.cleanDb();
-      });
-
-      test('Duplicate key error with code 400 if signup twice with the same user', async () => {
-        await signup(user0);
-        const res = await signup(user0);
-        expect(res.statusCode).toBe(400);
-        expect(res.error).toContain('duplicate key error');
-      });
+      test(
+        'Should get duplicate key error with code 400 when signup twice with the same user',
+        async () => {
+          await signup(user0);
+          const res = await signup(user0);
+          expect(res.statusCode).toBe(400);
+          expect(res.error).toContain('duplicate key error');
+        },
+      );
     });
   });
 
   describe('Login', () => {
     beforeEach(async () => {
-      await db.cleanDb();
-      await signup(user0);
+      const res = await signup(user0);
+      expect(res.error).toBeUndefined();
     });
 
-    test('Return token encoded with user information when login', async () => {
-      await login(user0);
+    test('Should return token encoded with user information when login', async () => {
+      const res = await login(user0);
+      expect(res.error).toBeUndefined();
     });
 
     describe('Login error', () => {
@@ -223,7 +224,6 @@ describe('User test', () => {
     let tokenUser1: string;
     let idUser1: string;
     beforeEach(async () => {
-      await db.cleanDb();
       await signup(root);
       await signup(user0);
       await signup(user1);
@@ -238,34 +238,41 @@ describe('User test', () => {
     });
 
     describe('Logout', () => {
-      test('Get 204 if successfully logout', async () => {
-        await logout(idUser0, tokenUser0);
+      test('Should get 204 if successfully logout', async () => {
+        const res = await logout(idUser0, tokenUser0);
+        expect(res.error).toBeUndefined();
       });
 
       describe('Logout error', () => {
-        test('Invalid token error if logout after logout as revoking the token', async () => {
-          await logout(idUser0, tokenUser0);
-          const resLogout = await logout(idUser0, tokenUser0);
-          expect(resLogout.statusCode).toBe(401);
-          expect(resLogout.error).toBe('Token invalid');
-        });
+        test(
+          'Should Invalid token error with code 401 when logout after logout as revoking the token',
+          async () => {
+            await logout(idUser0, tokenUser0);
+            const resLogout = await logout(idUser0, tokenUser0);
+            expect(resLogout.statusCode).toBe(401);
+            expect(resLogout.error).toBe('Token invalid');
+          },
+        );
 
-        test('Invalid token error if logout after login as updating the token', async () => {
-          await setTimeout(1000); // jwt.sign() needs 1 sec interval to generate different token
-          await login(user0);
-          const resLogout = await logout(idUser0, tokenUser0);
-          expect(resLogout.statusCode).toBe(401);
-          expect(resLogout.error).toBe('Token invalid');
-        });
+        test(
+          'Should get invalid token error with code 401 when logout after login as updating the token',
+          async () => {
+            await setTimeout(1000); // jwt.sign() needs 1 sec interval to generate different token
+            await login(user0);
+            const resLogout = await logout(idUser0, tokenUser0);
+            expect(resLogout.statusCode).toBe(401);
+            expect(resLogout.error).toBe('Token invalid');
+          },
+        );
 
-        test('Invalid token error if logout after login is expired', async () => {
-          await setTimeout(2000); // Token is expired after 1 sec in the test environment
+        test('Should get invalid token error with code 401 when logout after login is expired', async () => {
+          await setTimeout(3000); // Token is expired after 1 sec in the test environment
           const resLogout = await logout(idUser0, tokenUser0);
           expect(resLogout.statusCode).toBe(401);
           expect(resLogout.error).toBe('jwt expired');
         });
 
-        test('Invalid token error if logout with other user id', async () => {
+        test('Should get invalid token error with code 401 when logout with other user id', async () => {
           const resLogout = await logout(idUser0, tokenUser1);
           expect(resLogout.statusCode).toBe(401);
           expect(resLogout.error).toBe('Unauthorized Operation');
@@ -273,8 +280,8 @@ describe('User test', () => {
       });
     });
 
-    describe('Get All', () => {
-      test('Root can get all users', async () => {
+    describe('Get all users', () => {
+      test('Root Should be able to get all users', async () => {
         const res = await getAll(tokenRoot);
         expect(res.users).toHaveLength(3);
         expect(res.users?.[0]?.username).toBe('root');
@@ -283,7 +290,7 @@ describe('User test', () => {
       });
 
       describe('Get all users error', () => {
-        test('Non-root will get 401 error if try to get all users', async () => {
+        test('Non-root should get 401 error when try to get all users', async () => {
           const res = await getAll(tokenUser0);
           expect(res.statusCode).toBe(401);
           expect(res.error).toBe('Unauthorized Operation');
@@ -292,14 +299,15 @@ describe('User test', () => {
     });
 
     describe('Delete', () => {
-      test('Get 204 if successfully delete the user', async () => {
-        await unregister(idUser0, tokenUser0);
+      test('Should get 204 when successfully delete the user', async () => {
+        const resDel = await unregister(idUser0, tokenUser0);
+        expect(resDel.error).toBeUndefined();
         const res = await getAll(tokenRoot);
         expect(res.users).toHaveLength(2);
       });
 
       describe('Delete user error', () => {
-        test('Get 401 error and no token when login with deleted user', async () => {
+        test('Should get 401 error and no token when login with deleted user', async () => {
           await unregister(idUser0, tokenUser0);
           const res = await login(user0);
           expect(res.statusCode).toBe(401);
@@ -307,7 +315,7 @@ describe('User test', () => {
           expect(res.token).toBeUndefined();
         });
 
-        test('Get 401 error if user try to delete other user', async () => {
+        test('Should get 401 error when user try to delete other user', async () => {
           const res = await unregister(idUser1, tokenUser0);
           expect(res.statusCode).toBe(401);
           expect(res.error).toBe('Unauthorized Operation');

@@ -10,17 +10,23 @@ const fetchTodos = async (username: string) => {
   return todos;
 };
 
-const fetchTodoById = async (id: string) => {
+const fetchTodoById = async (id: string, userId: string) => {
   const todoCache = serverConfig.WITH_REDIS
-    && await todoRedisModel.fetchFromCache(id);
+    && await todoRedisModel.fetchFromCache<Todo>(id);
   if (todoCache) {
-    return JSON.parse(todoCache) as Todo;
+    return todoCache;
   }
   const todo = await todoMongoModel.findTodoById(id);
   if (serverConfig.WITH_REDIS && todo) {
-    await todoRedisModel.saveToCache(id, JSON.stringify(todo));
+    await todoRedisModel.saveToCache(id, todo);
   }
   const notNullTodo = errUtil.itemNotFoundHandler(todo);
+  if (notNullTodo.userId !== userId) {
+    throw errUtil.errorWrapper(
+      'UnauthorizedError',
+      'Unauthorized Operation',
+    );
+  }
   return notNullTodo;
 };
 
@@ -29,7 +35,14 @@ const addTodo = async (todo: TodoReqWithToken) => {
   return newTodo;
 };
 
-const removeTodoById = async (id: string) => {
+const removeTodoById = async (id: string, userId: string) => {
+  const todo = await todoMongoModel.findTodoById(id);
+  if (todo && (todo.userId !== userId)) {
+    throw errUtil.errorWrapper(
+      'UnauthorizedError',
+      'Unauthorized Operation',
+    );
+  }
   if (serverConfig.WITH_REDIS) {
     await todoRedisModel.deleteFromCache(id);
   }
@@ -50,7 +63,7 @@ const removeTodoByIds = async (ids: string[]) => {
 
 const replaceTodoById = async (id: string, todo: TodoReqWithToken) => {
   if (serverConfig.WITH_REDIS) {
-    await todoRedisModel.saveToCache(id, JSON.stringify(todo));
+    await todoRedisModel.saveToCache(id, todo);
   }
   const replaceResult = await todoMongoModel.replaceTodoById(id, todo);
   const notNullTodo = errUtil.itemNotFoundHandler(replaceResult.todo, replaceResult.count);

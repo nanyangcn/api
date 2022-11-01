@@ -17,11 +17,11 @@ const getTodos = async (
 };
 
 const getTodo = async (
-  req: Request<ParamsDictionary, unknown, unknown>,
+  req: Request<ParamsDictionary, unknown, { decodedToken: DecodedToken }>,
   res: Response,
 ) => {
   const id = errUtil.reqIdHandler(req);
-  const todo = await todoService.fetchTodoById(id);
+  const todo = await todoService.fetchTodoById(id, req.body.decodedToken.id);
   return res.json(todo);
 };
 
@@ -36,11 +36,11 @@ const postTodo = async (
 };
 
 const deleteTodo = async (
-  req: Request<ParamsDictionary, unknown, unknown>,
+  req: Request<ParamsDictionary, unknown, { decodedToken: DecodedToken }>,
   res: Response,
 ) => {
   const id = errUtil.reqIdHandler(req);
-  await todoService.removeTodoById(id);
+  await todoService.removeTodoById(id, req.body.decodedToken.id);
   return res.status(204).end();
 };
 
